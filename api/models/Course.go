@@ -13,6 +13,8 @@ type Course struct {
 	ID            			 uint32 `gorm:"primary_key;auto_increment" json:"id"`
 	Name           		string `gorm:"size 255;not null;" json:"name"`
 	Title 					string	`gorm:"size 255;not null;" json:"title"`
+	Learner			Student 	`json:"learner"`
+	LearnerID		uint32		`gorm:"not null" json:"learner_id"`
 	Creator          Tutor  `json:"tutor"`
 	CreatorID 			uint32 		`gorm:"not null" json:"tutor_id"`
 	CreatedAt      		time.Time 	`gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
@@ -24,6 +26,7 @@ func (course *Course) Prepare()  {
 	course.ID = 0
 	course.Name = html.EscapeString(strings.TrimSpace(course.Name))
 	course.Title = html.EscapeString(strings.TrimSpace(course.Title))
+	course.Learner = Student{}
 	course.Creator = Tutor{}
 	course.CreatedAt= time.Now()
 	course.UpdatedAt = time.Now()
