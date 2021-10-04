@@ -73,6 +73,7 @@ func (s *Student) Validate(action string) error  {
 		if err := checkmail.ValidateFormat(s.Email); err != nil {
 			return errors.New("invalid email")
 		}
+
 		return nil 
 	default: 
 		if s.Password == " " {
@@ -84,6 +85,7 @@ func (s *Student) Validate(action string) error  {
 		if err := checkmail.ValidateFormat(s.Email); err != nil {
 			return errors.New("invalid email")
 		}
+		
 		return nil 
 	}
 }
