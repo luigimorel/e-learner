@@ -31,7 +31,18 @@ func (module *Module) Prepare()  {
 	module.UpdatedAt = time.Now()
 }
 
-//Add the validator for the errors 
+func (m *Module) Validate() error {
+	if m.Title == "" {
+		return errors.New("required title")
+	}
+	if m.Content == "" {
+		return errors.New("required content")
+	}
+	if m.CreatorID < 1 {
+		return errors.New("required author")
+	}
+	return nil
+}
 
 func (m *Module) SaveModule(db *gorm.DB) (*Module, error)  {
 	var err error 
@@ -50,7 +61,6 @@ func (m *Module) SaveModule(db *gorm.DB) (*Module, error)  {
 	return m, nil
 
 }
-
 
 func (m *Module) FindAllModules(db *gorm.DB) (*[]Module, error )  {
 	var err error 
