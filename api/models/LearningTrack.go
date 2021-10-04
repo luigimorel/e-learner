@@ -13,13 +13,13 @@ type LearningTrack struct {
 	ID        				uint32   			`gorm:"primary_key;auto_increment;" json:"id"`
 	Title      				string   				`gorm:"size 255;not null;unique" json:"title"`
 	Course 	  			Course   				`json:"course"`
-	CourseID 			uint32			`gorm:"not null" json:"course_id"`
-	Creator       		Tutor 			  `json:"creator"`
-	CreatorID 			uint32			`gorm:"not null" json:"creator_id"`
-	Learner				Student	`json:"student"` 
-	LearnerID 			uint32 `gorm:"not null" json:"learner_id"`
-	CreatedAt 		time.Time	`gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt 		time.Time	`gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	CourseID 			uint32				`gorm:"not null" json:"course_id"`
+	Creator       		Tutor 				  `json:"creator"`
+	CreatorID 			uint32				`gorm:"not null" json:"creator_id"`
+	Learner				Student				`json:"student"` 
+	LearnerID 			uint32 				`gorm:"not null" json:"learner_id"`
+	CreatedAt 		time.Time			`gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt 		time.Time			`gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
 func (learningTrack *LearningTrack) Prepare()  {
@@ -31,7 +31,22 @@ func (learningTrack *LearningTrack) Prepare()  {
 	learningTrack.UpdatedAt = time.Now()
 }
 
-//A function to validate the input using the new errors func that needs to be created
+func (lt *LearningTrack) Validate() error {
+
+	if lt.Title == "" {
+		return errors.New("required title")
+	}
+	if lt.CreatorID < 1 {
+		return errors.New("required creator")
+	}
+	if lt.CourseID < 1 {
+		return errors.New("required course")
+	}
+	if lt.LearnerID < 1 {
+		return errors.New("required student")
+	}
+	return nil
+}
 
 func (lt *LearningTrack) SaveLearningTrack(db *gorm.DB) (*LearningTrack, error) {
 	var err error 
