@@ -131,6 +131,7 @@ func (s *Student) UpdateStudent(db *gorm.DB, sid uint32) (*Student, error)  {
 		map[string]interface{}{
 			"password" : s.Password, 
 			"email" : s.Email, 
+			"progress": s.Progress,
 			"updated_at": time.Now(),
 		},
 	)
