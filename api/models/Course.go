@@ -32,7 +32,20 @@ func (course *Course) Prepare()  {
 	course.UpdatedAt = time.Now()
 }
 
-//A function to validate the input using the new errors func that needs to be created
+
+func (c *Course) Validate() error {
+
+	if c.Title == "" {
+		return errors.New("required title")
+	}
+	if c.CreatorID < 1 {
+		return errors.New("required creator")
+	}
+	if c.LearnerID < 1 {
+		return errors.New("required student")
+	}
+	return nil
+}
 
 func (course *Course) SaveCourse(db *gorm.DB) (*Course, error) {
 	var err error 
