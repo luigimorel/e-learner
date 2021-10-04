@@ -33,8 +33,6 @@ func (tutor *Tutor) Prepare() {
 	tutor.UpdatedAt	= time.Now()
 }
 
-
-
 func HashTutorPassword(password string) ([]byte, error)  {
 	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 }
