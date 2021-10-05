@@ -63,6 +63,7 @@ func (s *Student) Validate(action string) error  {
 		}
 
 		return nil
+
 	case "login" : 
 		if s.Password == " " {
 			return errors.New("password is required")
@@ -90,7 +91,7 @@ func (s *Student) Validate(action string) error  {
 	}
 }
 
-func (s *Student) SaveUser(db *gorm.DB) (*Student, error) {
+func (s *Student) SaveStudent(db *gorm.DB) (*Student, error) {
 	var err error = db.Debug().Create(&s).Error
 	if err != nil {
 		return &Student{}, err
@@ -150,7 +151,7 @@ func (s *Student) UpdateStudent(db *gorm.DB, sid uint32) (*Student, error)  {
 	return s, nil 
 }
 
-func (s *Student) DeleteUser(db *gorm.DB, sid uint32) (int64, error) {
+func (s *Student) DeleteStudent(db *gorm.DB, sid uint32) (int64, error) {
 	db = db.Debug().Model(&Student{}).Where("id = ?", sid).Take(&Student{}).Delete(&Student{})
 
 	if db.Error != nil {
