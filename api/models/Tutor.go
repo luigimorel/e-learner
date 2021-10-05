@@ -87,7 +87,7 @@ func (t *Tutor) Validate(action string) error  {
 	}
 }
 
-func (t *Tutor) SaveUser(db *gorm.DB) (*Tutor, error) {
+func (t *Tutor) SaveTutor(db *gorm.DB) (*Tutor, error) {
 	var err error = db.Debug().Create(&t).Error
 	if err != nil {
 		return &Tutor{}, err
@@ -95,7 +95,7 @@ func (t *Tutor) SaveUser(db *gorm.DB) (*Tutor, error) {
 	return t, nil
 }
 
-func (t *Tutor) FindAllStudents(db *gorm.DB) (*[]Tutor, error){
+func (t *Tutor) FindAllTutors(db *gorm.DB) (*[]Tutor, error){
 	var err error 
 	tutors := []Tutor{}
 	err =  db.Debug().Model(&Tutor{}).Limit(100).Find(&tutors).Error
@@ -106,7 +106,7 @@ func (t *Tutor) FindAllStudents(db *gorm.DB) (*[]Tutor, error){
 	return &tutors, err
 }
 
-func (t*Tutor) FindStudentById(db *gorm.DB, tid uint32) (*Tutor, error) {
+func (t*Tutor) FindTutorById(db *gorm.DB, tid uint32) (*Tutor, error) {
 	
 	var err error = db.Debug().Model(&Tutor{}).Where("id = ?").Take(&t).Error
 	if err != nil {
@@ -118,7 +118,7 @@ func (t*Tutor) FindStudentById(db *gorm.DB, tid uint32) (*Tutor, error) {
 	return t, err
 }
 
-func (t *Tutor) UpdateStudent(db *gorm.DB, tid uint32) (*Tutor, error)  {
+func (t *Tutor) UpdateTutor(db *gorm.DB, tid uint32) (*Tutor, error)  {
 	
 	// Hash the password
 	err := t.BeforeSave()
@@ -146,7 +146,7 @@ func (t *Tutor) UpdateStudent(db *gorm.DB, tid uint32) (*Tutor, error)  {
 	return t, nil 
 }
 
-func (t *Tutor) DeleteUser(db *gorm.DB, tid uint32) (int64, error) {
+func (t *Tutor) DeleteTutor(db *gorm.DB, tid uint32) (int64, error) {
 	db = db.Debug().Model(&Tutor{}).Where("id = ?", tid).Take(&Tutor{}).Delete(&Tutor{})
 
 	if db.Error != nil {
