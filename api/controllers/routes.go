@@ -30,4 +30,17 @@ func (s *Server) initializeRoutes() {
 	s.Router.HandleFunc("/learning_track/{id}/course/{id}/module/{id}", middleware.SetMiddlewareJSON(middleware.SetMiddlewareAuthentication(s.UpdateModule))).Methods("PUT")
 	s.Router.HandleFunc("/learning_track/{id}/course/{id}/module/{id}", middleware.SetMiddlewareJSON(middleware.SetMiddlewareAuthentication(s.DeleteModule))).Methods("DELETE")
 
+	//Tutor routes 
+	s.Router.HandleFunc("/tutor", middleware.SetMiddlewareJSON(s.CreateTutor)).Methods("POS")
+	s.Router.HandleFunc("/tutor", middleware.SetMiddlewareJSON(s.GetTutors)).Methods("GET")
+	s.Router.HandleFunc("/tutor/{id}", middleware.SetMiddlewareJSON(s.GetTutor)).Methods("GET")
+	s.Router.HandleFunc("/tutor/{id}", middleware.SetMiddlewareJSON(middleware.SetMiddlewareAuthentication(s.UpdateTutor))).Methods("PUT")
+	s.Router.HandleFunc("/tutor/{id}", middleware.SetMiddlewareJSON(middleware.SetMiddlewareAuthentication(s.DeleteTutor))).Methods("DELETE")
+
+	//Student routes 
+	s.Router.HandleFunc("/student", middleware.SetMiddlewareJSON(s.CreateStudent)).Methods("POST")
+	s.Router.HandleFunc("/student", middleware.SetMiddlewareJSON(s.GetStudent)).Methods("GET")
+	s.Router.HandleFunc("/student", middleware.SetMiddlewareJSON(s.GetStudents)).Methods("GET")
+	s.Router.HandleFunc("/student/{id}", middleware.SetMiddlewareJSON(middleware.SetMiddlewareAuthentication(s.UpdateStudent))).Methods("PUT")
+	s.Router.HandleFunc("/student/{id}", middleware.SetMiddlewareJSON(middleware.SetMiddlewareAuthentication(s.DeleteStudent))).Methods("DELETE")
 	}
