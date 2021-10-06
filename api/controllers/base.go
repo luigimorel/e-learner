@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
-	
+
 	_ "github.com/jinzhu/gorm/dialects/mysql" //mysql database driver
 	"github.com/morelmiles/school-mgt-system/api/models"
 )
@@ -17,11 +17,11 @@ type Server struct {
 	Router *mux.Router
 }
 
-func (server *Server) Init(Dbuser, Dbpassword, Dbport, Dbhost, Dbname string) {
+func (server *Server) Init(Dbdriver, Dbuser, Dbpassword, Dbport, Dbhost, Dbname string) {
 	var err error 
 
-	DbURL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", Dbuser, Dbpassword, Dbhost, Dbport, Dbname) 
-	server.DB, err = gorm.Open(DbURL)
+	DbURL := fmt.Sprintf("%s:%s%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", Dbdriver, Dbuser, Dbpassword, Dbhost, Dbport, Dbname) 
+	server.DB, err = gorm.Open(Dbdriver, DbURL)
 	if err != nil {
 		log.Fatal(err)
 	}
