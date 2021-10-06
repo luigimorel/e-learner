@@ -153,7 +153,7 @@ func (server *Server) UpdateCourse(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (server *Server) DeletePost(w http.ResponseWriter, r *http.Request) {
+func (server *Server) DeleteCourse(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)	
 
