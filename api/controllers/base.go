@@ -13,22 +13,22 @@ import (
 )
 
 type Server struct {
-	DB *gorm.DB
+	DB     *gorm.DB
 	Router *mux.Router
 }
 
 func (server *Server) Init(Dbdriver, Dbuser, Dbpassword, Dbport, Dbhost, Dbname string) {
-	var err error 
+	var err error
 
-	DbURL := fmt.Sprintf("%s:%s%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", Dbdriver, Dbuser, Dbpassword, Dbhost, Dbport, Dbname) 
+	DbURL := fmt.Sprintf("%s:%s%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", Dbdriver, Dbuser, Dbpassword, Dbhost, Dbport, Dbname)
 	server.DB, err = gorm.Open(Dbdriver, DbURL)
 	if err != nil {
 		log.Fatal(err)
 	}
-	server.DB.Debug().AutoMigrate(&models.Student{}, &models.Course{}, &models.LearningTrack{},&models.Module{}, &models.Tutor{} ) //Migrate the database 
-	
+	server.DB.Debug().AutoMigrate(&models.Student{}, &models.Course{}, &models.LearningTrack{}, &models.Module{}, &models.Tutor{}) //Migrate the database
+
 	server.Router = mux.NewRouter()
-	
+
 	server.initializeRoutes()
 }
 

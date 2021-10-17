@@ -19,7 +19,7 @@ func init() {
 	}
 }
 
-func Run()  {
+func Run() {
 
 	err := godotenv.Load()
 	if err != nil {
@@ -27,9 +27,9 @@ func Run()  {
 	} else {
 		fmt.Println("We are getting the .env file 🎉🙈")
 	}
-		server.Init( os.Getenv("DB_DRIVER"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
+	server.Init(os.Getenv("DB_DRIVER"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
 
-		seed.Load(server.DB)
+	seed.Load(server.DB)
 
-		server.Run(":8080")
+	server.Run(":8080")
 }

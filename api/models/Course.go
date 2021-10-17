@@ -10,28 +10,26 @@ import (
 )
 
 type Course struct {
-	ID            			 uint32 `gorm:"primary_key;auto_increment" json:"id"`
-	Name           		string `gorm:"size 255;not null;" json:"name"`
-	Title 					string	`gorm:"size 255;not null;" json:"title"`
-	Learner			Student 	`json:"learner"`
-	LearnerID		uint32		`gorm:"not null" json:"learner_id"`
-	Creator          Tutor  `json:"tutor"`
-	CreatorID 			uint32 		`gorm:"not null" json:"tutor_id"`
-	CreatedAt      		time.Time 	`gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt 			time.Time	`gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	ID        uint32    `gorm:"primary_key;auto_increment" json:"id"`
+	Name      string    `gorm:"size 255;not null;" json:"name"`
+	Title     string    `gorm:"size 255;not null;" json:"title"`
+	Learner   Student   `json:"learner"`
+	LearnerID uint32    `gorm:"not null" json:"learner_id"`
+	Creator   Tutor     `json:"tutor"`
+	CreatorID uint32    `gorm:"not null" json:"tutor_id"`
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
-
-func (course *Course) Prepare()  {
+func (course *Course) Prepare() {
 	course.ID = 0
 	course.Name = html.EscapeString(strings.TrimSpace(course.Name))
 	course.Title = html.EscapeString(strings.TrimSpace(course.Title))
 	course.Learner = Student{}
 	course.Creator = Tutor{}
-	course.CreatedAt= time.Now()
+	course.CreatedAt = time.Now()
 	course.UpdatedAt = time.Now()
 }
-
 
 func (c *Course) Validate() error {
 
@@ -48,75 +46,74 @@ func (c *Course) Validate() error {
 }
 
 func (course *Course) SaveCourse(db *gorm.DB) (*Course, error) {
-	var err error 
+	var err error
 	err = db.Debug().Model(&Course{}).Create(&course).Error
 	if err != nil {
-		return &Course{}, nil 
+		return &Course{}, nil
 	}
 
-	if course.ID  != 0 {
+	if course.ID != 0 {
 		err = db.Debug().Model(&Course{}).Where("id = ? ", course.ID).Take(&course.Creator).Error
 		if err != nil {
 			return &Course{}, err
 		}
-	} 
+	}
 
-	return course, nil 
+	return course, nil
 }
 
-func (course *Course) FindAllCourses(db *gorm.DB) (*[]Course, error )  {
-	var err error 
+func (course *Course) FindAllCourses(db *gorm.DB) (*[]Course, error) {
+	var err error
 	courses := []Course{}
 	err = db.Debug().Model(&Course{}).Limit(100).Find(&courses).Error
 	if err != nil {
-		return &[]Course{}, nil 
+		return &[]Course{}, nil
 	}
 
 	if len(courses) > 0 {
 		for i := range courses {
 			err := db.Debug().Model(&Course{}).Where("id = ?").Take(&courses[i].Creator).Error
 			if err != nil {
-				return &[]Course{}, err 
+				return &[]Course{}, err
 			}
 		}
 	}
-	
-	return &courses, nil 
-}
 
+	return &courses, nil
+}
 
 func (course *Course) FindCourseById(db *gorm.DB, cid uint64) (*Course, error) {
 	var err error
 
 	err = db.Debug().Model(&Course{}).Where("id = ?", cid).Take(&course).Error
 	if err != nil {
-		return &Course{}, nil 
+		return &Course{}, nil
 	}
 
 	if course.ID != 0 {
 		err = db.Debug().Model(&Course{}).Where("id = ?", course.CreatorID).Take(&course.Creator).Error
 		if err != nil {
-			return &Course{}, err 
+			return &Course{}, err
 		}
 	}
-	return course, nil 
+	return course, nil
 }
 
-func (course *Course) UpdateACourse(db *gorm.DB)(*Course, error) {
-	var err error 
+func (course *Course) UpdateACourse(db *gorm.DB) (*Course, error) {
+	var err error
 
 	err = db.Debug().Model(&Course{}).Where("id = ?").Updates(Course{Title: course.Title, UpdatedAt: time.Now()}).Error
 	if err != nil {
-		return &Course{}, nil 
+		return &Course{}, nil
 	}
 
 	if course.ID != 0 {
 		err = db.Debug().Model(&Course{}).Where("id = ?", course.CreatorID).Take(&course.Creator).Error
 		if err != nil {
-			return &Course{}, err 
+			return &Course{}, err
 		}
 	}
-	return course, nil 
+	return course, nil
 }
 
 func (course *Course) DeleteACourse(db *gorm.DB, cid uint64, uid uint32) (uint64, error) {
@@ -128,5 +125,5 @@ func (course *Course) DeleteACourse(db *gorm.DB, cid uint64, uid uint32) (uint64
 		}
 		return 0, db.Error
 	}
-	return uint64(db.RowsAffected), nil 
+	return uint64(db.RowsAffected), nil
 }

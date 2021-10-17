@@ -32,25 +32,25 @@ func (server *Server) CreateCourse(w http.ResponseWriter, r *http.Request) {
 	err = course.Validate()
 	if err != nil {
 
-	responses.ERROR(w, http.StatusUnprocessableEntity, err)
-	return
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
-	uid,err := auth.ExtractTokenID(r)
+	uid, err := auth.ExtractTokenID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
-		return 
+		return
 	}
-	if uid != course.CreatorID  {
+	if uid != course.CreatorID {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
-		return 
+		return
 	}
 
 	courseCreated, err := course.SaveCourse(server.DB)
 	if err != nil {
 		formattedError := utils.FormatError(err.Error())
 		responses.ERROR(w, http.StatusInternalServerError, formattedError)
-		return 
+		return
 	}
 
 	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, courseCreated.ID))
@@ -59,42 +59,42 @@ func (server *Server) CreateCourse(w http.ResponseWriter, r *http.Request) {
 
 func (server *Server) GetCourses(w http.ResponseWriter, r *http.Request) {
 
-	course :=models.Course{}
-	
+	course := models.Course{}
+
 	courses, err := course.FindAllCourses(server.DB)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err )
-		return 
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
 	}
 	responses.JSON(w, http.StatusOK, courses)
-} 
+}
 
 func (server *Server) GetCourse(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	cid, err := strconv.ParseUint(vars["id"],10,64)
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	} 	
-	course := models.Course{}
-
-	courseResponse, err := course.FindCourseById(server.DB, cid)
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err )
-		return
-	}
-	responses.JSON(w, http.StatusOK, courseResponse)
-} 
-
-func (server *Server) UpdateCourse(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
-	// Check if course id is valid 
 	cid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
-	} 
+	}
+	course := models.Course{}
+
+	courseResponse, err := course.FindCourseById(server.DB, cid)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, courseResponse)
+}
+
+func (server *Server) UpdateCourse(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	// Check if course id is valid
+	cid, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
 
 	// Check if the course exists
 	course := models.Course{}
@@ -102,7 +102,7 @@ func (server *Server) UpdateCourse(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, errors.New("course not found"))
 		return
-	}	
+	}
 
 	//Check if the token is valid
 	uid, err := auth.ExtractTokenID(r)
@@ -110,7 +110,7 @@ func (server *Server) UpdateCourse(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusBadRequest, errors.New("unauthorized"))
 	}
 
-	// If user tries to update a course not belonging to them 
+	// If user tries to update a course not belonging to them
 	if uid != course.CreatorID {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
 	}
@@ -119,30 +119,30 @@ func (server *Server) UpdateCourse(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return 
+		return
 	}
-	
-	//Start processing the requested data 
+
+	//Start processing the requested data
 	courseUpdate := models.Course{}
 	err = json.Unmarshal(body, &courseUpdate)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
 
-	//Check if the req user id is equal to one gotten from the token 
+	//Check if the req user id is equal to one gotten from the token
 	if uid != courseUpdate.CreatorID {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
-		return 
+		return
 	}
 
 	courseUpdate.Prepare()
 	err = courseUpdate.Validate()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return 
+		return
 	}
 
-	courseUpdate.ID = course.ID //tells the model the id to update 
+	courseUpdate.ID = course.ID //tells the model the id to update
 
 	courseUpdated, err := courseUpdate.UpdateACourse(server.DB)
 	if err != nil {
@@ -155,37 +155,37 @@ func (server *Server) UpdateCourse(w http.ResponseWriter, r *http.Request) {
 
 func (server *Server) DeleteCourse(w http.ResponseWriter, r *http.Request) {
 
-	vars := mux.Vars(r)	
+	vars := mux.Vars(r)
 
-	//Check if the id is valid 
+	//Check if the id is valid
 	cid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
-		return 
+		return
 	}
-	//Check if the user is authenticated 
+	//Check if the user is authenticated
 	uid, err := auth.ExtractTokenID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
-		return 
+		return
 	}
-	//Check if the course exists 
+	//Check if the course exists
 	course := models.Course{}
 	err = server.DB.Debug().Model(models.Course{}).Where("id = ?", cid).Take(&course).Error
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, errors.New("course not found"))
 		return
 	}
-	// Check if the user is auth-e and owner of the course 
+	// Check if the user is auth-e and owner of the course
 	if uid != course.CreatorID {
 		responses.ERROR(w, http.StatusNotFound, errors.New("unauthorized"))
 		return
 	}
 	_, err = course.DeleteACourse(server.DB, cid, uid)
-		if err != nil {
-			responses.ERROR(w, http.StatusBadRequest, err)
-			return
-		}
-		w.Header().Set("Entity", fmt.Sprintf("%d", cid))
-		responses.JSON(w, http.StatusNoContent, "")
-} 
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	w.Header().Set("Entity", fmt.Sprintf("%d", cid))
+	responses.JSON(w, http.StatusNoContent, "")
+}

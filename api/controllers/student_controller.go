@@ -33,15 +33,15 @@ func (server *Server) CreateStudent(w http.ResponseWriter, r *http.Request) {
 	student.Prepare()
 	err = student.Validate("")
 	if err != nil {
-	responses.ERROR(w, http.StatusUnprocessableEntity, err)
-	return
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	studentCreated, err := student.SaveStudent(server.DB)
 	if err != nil {
 		formattedError := utils.FormatError(err.Error())
 		responses.ERROR(w, http.StatusInternalServerError, formattedError)
-		return 
+		return
 	}
 
 	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, studentCreated.ID))
@@ -50,57 +50,57 @@ func (server *Server) CreateStudent(w http.ResponseWriter, r *http.Request) {
 
 func (server *Server) GetStudents(w http.ResponseWriter, r *http.Request) {
 
-	student :=models.Student{}
-	
+	student := models.Student{}
+
 	students, err := student.FindAllStudents(server.DB)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err )
-		return 
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
 	}
 	responses.JSON(w, http.StatusOK, students)
-} 
+}
 
 func (server *Server) GetStudent(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	cid, err := strconv.ParseUint(vars["id"],10, 32)
+	cid, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
-	} 	
+	}
 	student := models.Student{}
 
 	studentResponse, err := student.FindStudentById(server.DB, uint32(cid))
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err )
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	responses.JSON(w, http.StatusOK, studentResponse)
-} 
+}
 
 func (server *Server) UpdateStudent(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	// Check if student id is valid 
+	// Check if student id is valid
 	uid, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
-	} 
+	}
 
-		//Read the data posted
+	//Read the data posted
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return 
+		return
 	}
 
-		//Start processing the requested data 
+	//Start processing the requested data
 	student := models.Student{}
 	err = json.Unmarshal(body, &student)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
-	
+
 	//Check if the token is valid
 	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -108,14 +108,14 @@ func (server *Server) UpdateStudent(w http.ResponseWriter, r *http.Request) {
 	}
 	if tokenID != uint32(uid) {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
-		return 
+		return
 	}
 
 	student.Prepare()
 	err = student.Validate("update")
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return 
+		return
 	}
 
 	studentUpdated, err := student.UpdateStudent(server.DB, uint32(uid))
@@ -129,22 +129,22 @@ func (server *Server) UpdateStudent(w http.ResponseWriter, r *http.Request) {
 
 func (server *Server) DeleteStudent(w http.ResponseWriter, r *http.Request) {
 
-	vars := mux.Vars(r)	
+	vars := mux.Vars(r)
 
 	student := models.Student{}
 
-	//Check if the id is valid 
+	//Check if the id is valid
 	cid, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
-		return 
+		return
 	}
 
-	//Check if the student is authenticated 
+	//Check if the student is authenticated
 	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
-		return 
+		return
 	}
 	if tokenID != 0 && tokenID != uint32(cid) {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
@@ -152,10 +152,10 @@ func (server *Server) DeleteStudent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = student.DeleteStudent(server.DB, uint32(cid))
-		if err != nil {
-			responses.ERROR(w, http.StatusBadRequest, err)
-			return
-		}
-		w.Header().Set("Entity", fmt.Sprintf("%d", cid))
-		responses.JSON(w, http.StatusNoContent, "")
-} 
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	w.Header().Set("Entity", fmt.Sprintf("%d", cid))
+	responses.JSON(w, http.StatusNoContent, "")
+}

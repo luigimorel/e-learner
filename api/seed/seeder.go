@@ -9,50 +9,50 @@ import (
 
 var students = []models.Student{
 	{
-		FirstName: "Luigi " ,
-		LastName:"Morel" ,
-		Email:    "morel@gmail.com",
-		Password: "password",
+		FirstName: "Luigi ",
+		LastName:  "Morel",
+		Email:     "morel@gmail.com",
+		Password:  "password",
 	},
 	{
 		FirstName: "Kasita",
-		LastName: "John",
-		Email:    "kasita@gmail.com",
-		Password: "password123",
+		LastName:  "John",
+		Email:     "kasita@gmail.com",
+		Password:  "password123",
 	},
 }
 
 var modules = []models.Module{
 	{
 		Content: "Lorem ipsum",
-		 Title: "Lorem ipsum title",
+		Title:   "Lorem ipsum title",
 	},
-	}
+}
 
-var creators = []models.Tutor {
+var creators = []models.Tutor{
 	{
 		FirstName: "Luigi",
-		LastName: "Morlel",
-		Email: "kl@test.com",
-		Password: "password",
-		}, 
-		{
+		LastName:  "Morlel",
+		Email:     "kl@test.com",
+		Password:  "password",
+	},
+	{
 		FirstName: "Kand",
-		LastName: "iwe",
-		Email: "kl@test.com",
-		Password: "password",	
-		},
-	}
+		LastName:  "iwe",
+		Email:     "kl@test.com",
+		Password:  "password",
+	},
+}
 
-var learningTrack = []models.LearningTrack {
+var learningTrack = []models.LearningTrack{
 	{
 		Title: "Learning track one ",
 	},
 }
 
-var courses = []models.Course {
+var courses = []models.Course{
 	{
-		Name: "Machines learning",
+		Name:  "Machines learning",
 		Title: "AI",
 	},
 }
